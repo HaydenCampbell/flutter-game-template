@@ -107,7 +107,7 @@ final settingsControllerProvider = StateNotifierProvider<SettingsController, Set
 );
 
 final audioControllerProvider =
-    ChangeNotifierProvider<AudioController>((ref) => AudioController(ref.read)..initialize());
+    ChangeNotifierProvider<AudioController>((ref) => AudioController(ref)..initialize());
 
 final playerProgressProvider = StateNotifierProvider<PlayerProgress, int>(
   (ref) => PlayerProgress(LocalStoragePlayerProgressPersistence())..getLatestFromStore(),

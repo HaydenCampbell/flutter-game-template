@@ -18,7 +18,7 @@ import 'sounds.dart';
 class AudioController extends ChangeNotifier {
   static final _log = Logger('AudioController');
 
-  final Reader _read;
+  final Ref _ref;
 
   final Queue<Song> _playlist;
 
@@ -28,7 +28,7 @@ class AudioController extends ChangeNotifier {
 
   late Function _disposeListener;
 
-  AudioController(this._read) : _playlist = Queue.of(List<Song>.of(songs)..shuffle());
+  AudioController(this._ref) : _playlist = Queue.of(List<Song>.of(songs)..shuffle());
 
   Future<void> initialize() async {
     _log.info('Preloading sound effects');
@@ -47,7 +47,7 @@ class AudioController extends ChangeNotifier {
     FlameAudio.bgm.initialize();
     FlameAudio.bgm.audioPlayer?.onPlayerCompletion.listen(_changeSong);
 
-    _disposeListener = _read(settingsControllerProvider.notifier).addListener((state) {
+    _disposeListener = _ref.read(settingsControllerProvider.notifier).addListener((state) {
       _musicHandler();
     });
   }
@@ -68,12 +68,12 @@ class AudioController extends ChangeNotifier {
   /// [SettingsController.muted] is `true` or if its
   /// [SettingsController.soundsOn] is `false`.
   void playSfx(SfxType type) {
-    final muted = _read(settingsControllerProvider).muted;
+    final muted = _ref.read(settingsControllerProvider).muted;
     if (muted) {
       _log.info(() => 'Ignoring playing sound ($type) because audio is muted.');
       return;
     }
-    final soundsOn = _read(settingsControllerProvider).soundsOn;
+    final soundsOn = _ref.read(settingsControllerProvider).soundsOn;
     if (!soundsOn) {
       _log.info(() => 'Ignoring playing sound ($type) because sounds are turned off.');
       return;
@@ -97,7 +97,7 @@ class AudioController extends ChangeNotifier {
   }
 
   void _musicHandler() {
-    if (_read(settingsControllerProvider).musicOn && !_read(settingsControllerProvider).muted) {
+    if (_ref.read(settingsControllerProvider).musicOn && !_ref.read(settingsControllerProvider).muted) {
       // Music got turned on.
       _resumeMusic();
     } else {
