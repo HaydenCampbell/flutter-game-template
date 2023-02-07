@@ -19,7 +19,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/', builder: (context, state) => const MainMenuScreen(key: Key('main menu')), routes: [
         GoRoute(
             path: 'play',
-            pageBuilder: (context, state) => buildMyTransition(
+            pageBuilder: (context, state) => buildMyTransition<void>(
                   child: const LevelSelectionScreen(key: Key('level selection')),
                   color: ref.read(paletteProvider).backgroundLevelSelection,
                 ),
@@ -29,7 +29,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                 pageBuilder: (context, state) {
                   final levelNumber = int.parse(state.params['level']!);
                   final level = gameLevels.singleWhere((e) => e.number == levelNumber);
-                  return buildMyTransition(
+                  return buildMyTransition<void>(
                     child: PlaySessionScreen(
                       level,
                       key: const Key('play session'),
@@ -44,7 +44,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                   final map = state.extra! as Map<String, dynamic>;
                   final score = map['score'] as Score;
 
-                  return buildMyTransition(
+                  return buildMyTransition<void>(
                     child: WinGameScreen(
                       score: score,
                       key: const Key('win game'),
