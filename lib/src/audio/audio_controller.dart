@@ -33,8 +33,7 @@ class AudioController extends ChangeNotifier {
   Future<void> initialize() async {
     _log.info('Preloading sound effects');
 
-    _audioCache = await FlameAudio.audioCache
-        .loadAll(SfxType.values.expand(soundTypeToFilename).map((sound) => "sfx/$sound").toList());
+    _audioCache = await FlameAudio.audioCache.loadAll(SfxType.values.expand(soundTypeToFilename).map((sound) => "sfx/$sound").toList());
 
     for (var uri in _audioCache) {
       await AudioPool.create(
@@ -45,7 +44,7 @@ class AudioController extends ChangeNotifier {
     }
 
     FlameAudio.bgm.initialize();
-    FlameAudio.bgm.audioPlayer?.onPlayerCompletion.listen(_changeSong);
+    FlameAudio.bgm.audioPlayer.onPlayerComplete.listen(_changeSong);
 
     _disposeListener = _ref.read(settingsControllerProvider.notifier).addListener((state) {
       _musicHandler();
@@ -109,8 +108,8 @@ class AudioController extends ChangeNotifier {
   Future<void> _resumeMusic() async {
     _log.info('Resuming music');
 
-    switch (FlameAudio.bgm.audioPlayer?.state) {
-      case PlayerState.PAUSED:
+    switch (FlameAudio.bgm.audioPlayer.state) {
+      case PlayerState.paused:
         _log.info('Calling _musicPlayer.resume()');
         try {
           await FlameAudio.bgm.resume();
@@ -120,17 +119,17 @@ class AudioController extends ChangeNotifier {
           await FlameAudio.bgm.play("music/${_playlist.first.filename}");
         }
         break;
-      case PlayerState.STOPPED:
+      case PlayerState.stopped:
         _log.info("resumeMusic() called when music is stopped. "
             "This probably means we haven't yet started the music. "
             "For example, the game was started with sound off.");
         await FlameAudio.bgm.play("music/${_playlist.first.filename}");
         break;
-      case PlayerState.PLAYING:
+      case PlayerState.playing:
         _log.warning('resumeMusic() called when music is playing. '
             'Nothing to do.');
         break;
-      case PlayerState.COMPLETED:
+      case PlayerState.completed:
         _log.warning('resumeMusic() called when music is completed. '
             "Music should never be 'completed' as it's either not playing "
             "or looping forever.");
